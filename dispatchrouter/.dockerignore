@@ -1,0 +1,8 @@
+src/
+target/
+qpid-dispatch-build/
+*.xml
+*.sh
+.settings/
+.classpath
+.project

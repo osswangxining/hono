@@ -1,8 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 
-# Assumes that COMMIT, DOCKER_USER and DOCKER_PASS to be set
+BASE=`dirname $0`
+ABS_BASE=`cd $BASE && pwd`
+echo $ABS_BASE
+
+BUILDER_IMAGE=eclipsehono/qpid-dispatch-build
+
+# Assumes that DOCKER_USER and DOCKER_PASS are set
 REPO=eclipsehono/qpid-dispatch
-DIR=.
 TAG="latest"
 
 if [ -n "$TRAVIS_TAG" ]
@@ -10,15 +15,19 @@ then
     TAG="$TRAVIS_TAG"
 fi
 
-docker build -t $REPO:$COMMIT $DIR || exit 1
+# create the image for building the Proton and Dispatch Router binaries
+docker build -t $BUILDER_IMAGE:latest $ABS_BASE/qpid-dispatch-build || exit 1
 
-if [ "$TRAVIS_BRANCH" == "master" ] || [ -n "$TRAVIS_TAG" ]
+# build the binaries
+docker run -v $ABS_BASE:/binaries $BUILDER_IMAGE:latest || exit 1
+
+# create the Dispatch Router image
+docker build -t $REPO:travis-$TRAVIS_BUILD_NUMBER $ABS_BASE || exit 1
+
+if [ -n "$DOCKER_USER" ]
 then
-    if [ "$TRAVIS_PULL_REQUEST" == "false" ]
-    then
-        docker login -u $DOCKER_USER -p $DOCKER_PASS || exit 1
-        docker tag $REPO:$COMMIT $REPO:$TAG || exit 1
-        docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER || exit 1
-        docker push $REPO || exit 1
-    fi
+    # push Dispatch Router image to Docker Hub
+    docker tag $REPO:travis-$TRAVIS_BUILD_NUMBER $REPO:$TAG || exit 1
+    docker login -u $DOCKER_USER -p $DOCKER_PASS || exit 1
+    docker push $REPO || exit 1
 fi

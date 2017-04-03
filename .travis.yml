@@ -6,21 +6,12 @@ jdk:
 sudo: required
 services:
   - docker
-# new Maven version is needed for fabric8 Maven plugin
 before_install:
+  # new Maven version is needed for fabric8 Maven plugin
   - wget https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip
   - unzip -qq apache-maven-3.3.9-bin.zip
   - export M2_HOME=$PWD/apache-maven-3.3.9
   - export PATH=$M2_HOME/bin:$PATH
-  - docker run -v $TRAVIS_BUILD_DIR/dispatchrouter:/binaries eclipsehono/qpid-dispatch-build:latest
-# build the Docker image used for building binaries of Qpid Proton and Qpid Dispatch Router
-before_script:
-# 3.4.2017 KH we do not need to build this image every time since we only use it as a tool to build the Dispatch Router
-# image
-#  - cd $TRAVIS_BUILD_DIR/dispatchrouter/qpid-dispatch-build
-#  - docker build -t eclipsehono/qpid-dispatch-build:latest .
-#  - docker run -v $TRAVIS_BUILD_DIR/dispatchrouter:/binaries eclipsehono/qpid-dispatch-build:latest
-#  - cd $TRAVIS_BUILD_DIR
 env:
   global:
   - COMMIT=${TRAVIS_COMMIT::8}
