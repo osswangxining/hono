@@ -259,7 +259,7 @@ Test cases are run against Docker images of Hono server + (Apache Qpid Dispatch 
                 <downstream.amqp.port>${qpid.amqp.port}</downstream.amqp.port>
               </systemProperties>
               <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
-              <test>DeviceRegistrationIT</test>
+              <test>DeviceRegistrationIT, SendReceiveIT</test>
             </configuration>
             <executions>
               <execution>
