@@ -6,6 +6,27 @@ networks:
 
 services:
 
+  zookeeper:
+    image: wurstmeister/zookeeper
+    networks:
+      hono-net:
+        aliases:
+          - zookeeper.hono
+    ports:
+      - "2181:2181"
+  
+  kafka:
+    image: wurstmeister/kafka
+    networks:
+      hono-net:
+        aliases:
+          - kafka.hono
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper.hono:2181
+          
   influxdb:
     image: influxdb:1.2.2
     networks:

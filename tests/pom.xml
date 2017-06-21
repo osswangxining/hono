@@ -65,6 +65,13 @@ Test cases are run against Docker images of Hono server + (Apache Qpid Dispatch 
       <groupId>org.apache.qpid</groupId>
       <artifactId>qpid-jms-client</artifactId>
     </dependency>
+    
+    <dependency>
+        <groupId>org.eclipse.paho</groupId>
+        <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+        <version>1.0.2</version>
+    </dependency>
+    
   </dependencies>
 
   <profiles>

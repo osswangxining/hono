@@ -88,6 +88,8 @@ public class ExampleReceiver extends AbstractExampleClient {
         final String deviceId = MessageHelper.getDeviceId(msg);
         final Section body = msg.getBody();
         String content = null;
+        LOG.info("message is {}", msg);
+        LOG.info("body is {}", body);
         if (body instanceof Data) {
             content = ((Data) msg.getBody()).getValue().toString();
         } else if (body instanceof AmqpValue) {
