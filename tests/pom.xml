@@ -72,6 +72,13 @@ Test cases are run against Docker images of Hono server + (Apache Qpid Dispatch 
         <version>1.0.2</version>
     </dependency>
     
+    <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
+	<dependency>
+	    <groupId>org.apache.kafka</groupId>
+	    <artifactId>kafka-clients</artifactId>
+	    <version>0.10.2.1</version>
+	</dependency>
+    
   </dependencies>
 
   <profiles>

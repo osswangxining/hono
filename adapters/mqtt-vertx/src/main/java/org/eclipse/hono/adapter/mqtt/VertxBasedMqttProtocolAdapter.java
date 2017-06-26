@@ -20,6 +20,7 @@ import org.apache.qpid.proton.amqp.messaging.Accepted;
 import org.eclipse.hono.client.MessageSender;
 import org.eclipse.hono.config.ServiceConfigProperties;
 import org.eclipse.hono.service.AbstractProtocolAdapterBase;
+import org.eclipse.hono.service.kafka.KafkaConnector;
 import org.eclipse.hono.service.registration.RegistrationAssertionHelperImpl;
 import org.eclipse.hono.util.Constants;
 import org.eclipse.hono.util.ResourceIdentifier;
@@ -192,7 +193,7 @@ public class VertxBasedMqttProtocolAdapter extends AbstractProtocolAdapterBase<S
     private void handleEndpointConnection(final MqttEndpoint endpoint) {
 
         LOG.info("Connection request from client {}", endpoint.clientIdentifier());
-
+        
         if (!isConnected()) {
             endpoint.reject(MqttConnectReturnCode.CONNECTION_REFUSED_SERVER_UNAVAILABLE);
 
@@ -205,7 +206,9 @@ public class VertxBasedMqttProtocolAdapter extends AbstractProtocolAdapterBase<S
                 try {
 
                     final ResourceIdentifier resource = ResourceIdentifier.fromString(message.topicName());
-
+                    LOG.info("received request with resourceId: {}", resource.getResourceId());
+                    LOG.info("received request with resource: {}", resource.toString());
+                    
                     // if MQTT client doesn't specify device_id then closing connection (MQTT has now way for errors)
                     if (resource.getResourceId() == null) {
                         close(endpoint);
@@ -218,8 +221,8 @@ public class VertxBasedMqttProtocolAdapter extends AbstractProtocolAdapterBase<S
                                         resource, message.qosLevel(), s.cause().getMessage());
                                 close(endpoint);
                             } else {
-                                LOG.trace("successfully processed message [client ID: {}, topic: {}, QoS: {}]", endpoint.clientIdentifier(),
-                                        resource, message.qosLevel());
+                                LOG.trace("successfully processed message [client ID: {}, topic: {}, QoS: {}, Payload: {}]", endpoint.clientIdentifier(),
+                                        resource, message.qosLevel(), message.payload().toString(Charset.defaultCharset()));
                             }
                         });
 
@@ -318,6 +321,50 @@ public class VertxBasedMqttProtocolAdapter extends AbstractProtocolAdapterBase<S
         });
         if (!accepted) {
             uploadHandler.fail("no credit available for sending message");
+        } else {
+          vertx.executeBlocking(future -> {
+            sendMessage2Kafka(endpoint, message);
+            future.complete();
+          }, res -> {
+            if(res.failed()) {
+              LOG.debug("sendMessage2Kafka is failed.......");
+            } else {
+              LOG.debug("sendMessage2Kafka is executed succesfully.......");
+            }
+            
+          });
+          
         }
     }
+    
+    private void sendMessage2Kafka(MqttEndpoint endpoint, MqttPublishMessage message) {
+        final ResourceIdentifier resource = ResourceIdentifier.fromString(message.topicName());
+        if (resource.getEndpoint().equals(TELEMETRY_ENDPOINT) || resource.getEndpoint().equals(EVENT_ENDPOINT)) {
+          String kafkaConnection = System.getenv("KAFKA_CONNECTION");
+          LOG.debug("kafkaConnection: {}", kafkaConnection);
+          KafkaConnector connector = new KafkaConnector(kafkaConnection);
+          String topic = null;
+          String key = resource.getTenantId() + "_" + resource.getResourceId();
+          String value = message.payload().toString(Charset.defaultCharset());
+          if (resource.getEndpoint().equals(TELEMETRY_ENDPOINT)) {
+            topic = "data." + TELEMETRY_ENDPOINT;
+          } else if (resource.getEndpoint().equals(EVENT_ENDPOINT)) {
+            topic = "data." + EVENT_ENDPOINT;
+          }
+          LOG.debug("topic: {}, key: {}, value: {}", topic, key, value);
+          if(topic != null) {
+            connector.sendRecord(topic, key, value, (metadata, exception) -> {
+              if (exception != null) {
+                LOG.debug(exception.getMessage());
+              } else {
+                LOG.debug("Message has been successfully sent.");
+              }
+            });
+          }
+          connector.close();
+        } else {
+          LOG.debug("no such endpoint [{}]", resource.getEndpoint());
+        }
+  
+      }
 }

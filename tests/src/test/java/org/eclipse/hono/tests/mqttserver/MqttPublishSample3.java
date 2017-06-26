@@ -1,4 +1,4 @@
-package org.eclipse.hono.mqttserver;
+package org.eclipse.hono.tests.mqttserver;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;

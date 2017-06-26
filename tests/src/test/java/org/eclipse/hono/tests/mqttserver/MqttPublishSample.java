@@ -1,4 +1,4 @@
-package org.eclipse.hono.mqttserver;
+package org.eclipse.hono.tests.mqttserver;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -6,14 +6,15 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-public class MqttPublishSample2 {
+public class MqttPublishSample {
   public static void main(String[] args) {
 
     String topic = "/vertx/test";
-    String content = "Message from MqttPublishSample";
+    String clientId = "JavaSample-longrunning";
+
+    String content = "Message from MqttPublishSample from" + clientId;
     int qos = 2;
     String broker = "tcp://127.0.0.1:10883";
-    String clientId = "JavaSample";
     MemoryPersistence persistence = new MemoryPersistence();
 
     try {
@@ -29,9 +30,11 @@ public class MqttPublishSample2 {
       message.setQos(qos);
       sampleClient.publish(topic, message);
       System.out.println("Message published");
-      sampleClient.disconnect();
-      System.out.println("Disconnected");
-      System.exit(0);
+      
+      sampleClient.subscribe(topic);
+//      sampleClient.disconnect();
+//      System.out.println("Disconnected");
+//      System.exit(0);
     } catch (MqttException me) {
       System.out.println("reason " + me.getReasonCode());
       System.out.println("msg " + me.getMessage());

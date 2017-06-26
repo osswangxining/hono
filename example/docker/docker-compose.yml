@@ -24,7 +24,8 @@ services:
     ports:
       - "9092:9092"
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
+      KAFKA_ADVERTISED_HOST_NAME: kafka.hono
+      KAFKA_ADVERTISED_PORT: 9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper.hono:2181
           
   influxdb:
@@ -179,6 +180,7 @@ services:
       - "1883:1883"
       - "8883:8883"
     environment:
+      - KAFKA_CONNECTION=kafka.hono:9092
       - HONO_CLIENT_NAME=Hono MQTT Adapter
       - HONO_CLIENT_HOST=hono.hono
       - HONO_CLIENT_PORT=5671

@@ -1,4 +1,4 @@
-package org.eclipse.hono.mqttserver;
+package org.eclipse.hono.tests.mqttserver;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -6,15 +6,14 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-public class MqttPublishSample {
+public class MqttPublishSample2 {
   public static void main(String[] args) {
+    String clientId = "4715";
 
-    String topic = "/vertx/test";
-    String clientId = "JavaSample-longrunning";
-
-    String content = "Message from MqttPublishSample from" + clientId;
-    int qos = 2;
-    String broker = "tcp://127.0.0.1:10883";
+    String topic = "event/DEFAULT_TENANT/"+clientId;
+    String content = "Message from MqttPublishSample";
+    int qos = 1;
+    String broker = "tcp://127.0.0.1:1883";
     MemoryPersistence persistence = new MemoryPersistence();
 
     try {
@@ -25,16 +24,17 @@ public class MqttPublishSample {
       System.out.println("Connecting to broker: " + broker);
       sampleClient.connect(connOpts);
       System.out.println("Connected");
-      System.out.println("Publishing message: " + content);
-      MqttMessage message = new MqttMessage(content.getBytes());
-      message.setQos(qos);
-      sampleClient.publish(topic, message);
-      System.out.println("Message published");
       
-      sampleClient.subscribe(topic);
-//      sampleClient.disconnect();
-//      System.out.println("Disconnected");
-//      System.exit(0);
+      for(int i =0; i < 10; i++) {
+        System.out.println("Publishing message: " + content);
+        MqttMessage message = new MqttMessage(("["+i+"]"+content).getBytes());
+        message.setQos(qos);
+        sampleClient.publish(topic, message);
+      }
+      System.out.println("Message published");
+      sampleClient.disconnect();
+      System.out.println("Disconnected");
+      System.exit(0);
     } catch (MqttException me) {
       System.out.println("reason " + me.getReasonCode());
       System.out.println("msg " + me.getMessage());

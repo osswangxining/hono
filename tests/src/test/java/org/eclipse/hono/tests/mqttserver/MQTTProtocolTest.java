@@ -1,4 +1,4 @@
-package org.eclipse.hono.mqttserver;
+package org.eclipse.hono.tests.mqttserver;
 
 public class MQTTProtocolTest {
 

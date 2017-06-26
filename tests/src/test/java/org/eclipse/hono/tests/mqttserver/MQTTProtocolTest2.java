@@ -1,4 +1,4 @@
-package org.eclipse.hono.mqttserver;
+package org.eclipse.hono.tests.mqttserver;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
