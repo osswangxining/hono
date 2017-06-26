@@ -200,3 +200,34 @@ services:
       - HONO_MQTT_CERT_PATH=/etc/hono/certs/mqtt-adapter-cert.pem
       - HONO_MQTT_MAX_INSTANCES=1
       - SPRING_PROFILES_ACTIVE=dev
+
+  streaming-analysis:
+    image: eclipsehono/hono-streaming-analysis:${project.version}
+    networks:
+      hono-net:
+        aliases:
+          - streaming-analysis.hono
+    ports:
+      - "8081:8081"
+      - "8445:8445"
+    environment:
+      - KAFKA_CONNECTION=kafka.hono:9092
+      - HONO_CLIENT_NAME=Hono REST Adapter
+      - HONO_CLIENT_HOST=hono.hono
+      - HONO_CLIENT_PORT=5671
+      - HONO_CLIENT_USERNAME=rest-adapter@HONO
+      - HONO_CLIENT_PASSWORD=rest-secret
+      - HONO_CLIENT_TRUST_STORE_PATH=/etc/hono/certs/trusted-certs.pem
+      - HONO_REGISTRATION_NAME=Hono REST Adapter
+      - HONO_REGISTRATION_HOST=device-registry.hono
+      - HONO_REGISTRATION_PORT=5671
+      - HONO_REGISTRATION_USERNAME=rest-adapter@HONO
+      - HONO_REGISTRATION_PASSWORD=rest-secret
+      - HONO_REGISTRATION_TRUST_STORE_PATH=/etc/hono/certs/trusted-certs.pem
+      - HONO_HTTP_BIND_ADDRESS=0.0.0.0
+      - HONO_HTTP_INSECURE_PORT_BIND_ADDRESS=0.0.0.0
+      - HONO_HTTP_INSECURE_PORT_ENABLED=true
+      - HONO_HTTP_KEY_PATH=/etc/hono/certs/rest-adapter-key.pem
+      - HONO_HTTP_CERT_PATH=/etc/hono/certs/rest-adapter-cert.pem
+      - HONO_HTTP_MAX_INSTANCES=1
+      - SPRING_PROFILES_ACTIVE=dev      
