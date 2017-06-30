@@ -1,11 +1,11 @@
-package org.eclipse.hono.tests.kafka;
+package org.eclipse.hono.analysis.action;
 
 import java.util.Properties;
 
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 
 public class KafkaConnector {
   KafkaProducer<String, String> producer;
@@ -26,13 +26,13 @@ public class KafkaConnector {
 
   /**
    * Returns the actual number of sent records
+   * @param callback 
    */
-  public void sendRecord(String topic,  String key, String value) {
+  public void sendRecord(String topic,  String key, String value, Callback callback) {
 
       try{
           ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, value);
-          RecordMetadata recordMetadata = producer.send(record).get();
-          System.out.println(recordMetadata);
+          producer.send(record, callback);
       } catch (Exception e) {
           e.printStackTrace();
       }
@@ -44,15 +44,15 @@ public class KafkaConnector {
       producer.close();
   }
 
-  public static void main(String[] args) {
-
-      String brokerlist = "127.0.0.1:9092";
-
-      String topic = "data.event";
-      KafkaConnector connector = new KafkaConnector(brokerlist);
-      for(int i = 0; i < 10; i++) {
-          connector.sendRecord(topic, i+"DEFAULT_TENANT_4714", i+"Message from MqttPublishSample");
-      }
-      connector.close();
-  }
+//  public static void main(String[] args) {
+//
+//      String brokerlist = "127.0.0.1:9092";
+//
+//      String topic = "topicname";
+//      KafkaConnector connector = new KafkaConnector(brokerlist);
+//      for(int i = 0; i < 200; i++) {
+//          connector.sendRecord(topic, i+"", i+"");
+//      }
+//      connector.close();
+//  }
 }

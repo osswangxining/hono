@@ -135,6 +135,7 @@
     <module>adapters</module>
     <module>application</module>
     <module>streaming-analysis</module>
+    <module>analysis-action</module>
     <module>bom</module>
     <module>broker</module>
     <module>core</module>
@@ -150,6 +151,7 @@
     <module>services</module>
     <module>site</module>
     <module>tests</module>
+    
   </modules>
 
 

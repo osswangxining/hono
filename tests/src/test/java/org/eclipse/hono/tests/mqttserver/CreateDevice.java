@@ -19,7 +19,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 
-public class MqttPublishSample2 {
+public class CreateDevice {
   public static void main(String[] args) {
     String clientId = "4716";
 
@@ -28,7 +28,39 @@ public class MqttPublishSample2 {
     int qos = 1;
     String broker = "tcp://127.0.0.1:1883";
     MemoryPersistence persistence = new MemoryPersistence();
-    
+    HttpPost httpPost = new HttpPost("http://localhost:8080/registration/DEFAULT_TENANT");
+    CloseableHttpClient httpclient = HttpClients.createDefault();
+
+    CloseableHttpResponse response2 = null;
+
+    try {
+      JsonParser parser =new JsonParser(); 
+      JsonObject json=(JsonObject) parser.parse("{'device_id':'4716'}");
+      System.out.println(json.toString());
+      StringEntity inputEntity = new StringEntity(json.toString(), "UTF-8");
+      httpPost.setEntity(inputEntity);
+      httpPost.addHeader("Content-Type", "application/json");
+      httpPost.addHeader("Accept", "application/json");
+      httpPost.setHeader("Connection", "close");
+      
+      response2 = httpclient.execute(httpPost);
+      System.out.println(response2.getStatusLine());
+      HttpEntity entity2 = response2.getEntity();
+      // do something useful with the response body
+      // and ensure it is fully consumed
+      EntityUtils.consume(entity2);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } finally {
+      if (response2 != null)
+        try {
+          response2.close();
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+    }
 
     try {
 
@@ -40,7 +72,7 @@ public class MqttPublishSample2 {
       sampleClient.connect(connOpts);
       System.out.println("Connected");
 
-      for (int i = 10; i < 20; i++) {
+      for (int i = 0; i < 10; i++) {
         System.out.println("Publishing message: " + content);
         MqttMessage message = new MqttMessage(("[" + i + "]" + content).getBytes());
         message.setQos(qos);

@@ -1,6 +1,5 @@
-package org.eclipse.hono.tests.kafka;
+package org.eclipse.hono.streaming.analysis;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -16,7 +15,7 @@ public class KafkaConsumerClient {
   public KafkaConsumerClient(String brokerList) {
     Properties props = new Properties();
     props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
-    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest"); // "earliest"
+    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest"); // "earliest"
                                                                   // else
                                                                   // "latest"
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
@@ -24,7 +23,7 @@ public class KafkaConsumerClient {
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
         "org.apache.kafka.common.serialization.StringDeserializer");
-    props.put(ConsumerConfig.GROUP_ID_CONFIG, "group3");
+    props.put(ConsumerConfig.GROUP_ID_CONFIG, "group");
 
     consumer = new KafkaConsumer<>(props);
   }
@@ -37,7 +36,7 @@ public class KafkaConsumerClient {
         for (TopicPartition partition : records.partitions()) {
           List<ConsumerRecord<String, String>> partitionRecords = records.records(partition);
           for (ConsumerRecord<String, String> record : partitionRecords) {
-            System.out.println(record.topic() + "," + record.key() + "," + record.value());
+            System.out.println(record.value());
           }
         }
         consumer.commitSync();
@@ -51,22 +50,12 @@ public class KafkaConsumerClient {
 
   }
 
-  public static void main(String[] args) {
-     List<String> topic = new ArrayList<String>();
-//     topic.add("data.telemetry");
-     topic.add("data.event");
-     topic.add("action.webhook");
-//     topic.add("topicname");
-     String brokerlist = "127.0.0.1:9092";
-     new KafkaConsumerClient(brokerlist).process(topic);
-//    String s = "\0" + "a" + "\0b";
-//    System.out.println(s.length());
-//    System.out.println("[" + s.substring(0, 1) + "]");
-//    System.out.println(s.substring(1, 2));
-//    System.out.println(s.substring(2));
-//    String[] split = s.split("\0");
-//    for (String string : split) {
-//      System.out.println("ii"+string+"jj");
-//    }
-  }
+//  public static void main(String[] args) {
+//    List<String> topic = new ArrayList<String>();
+//    topic.add("topicname");
+//
+//    String brokerlist = "127.0.0.1:9092";
+//    new KafkaConsumerClient(brokerlist).process(topic);
+//
+//  }
 }

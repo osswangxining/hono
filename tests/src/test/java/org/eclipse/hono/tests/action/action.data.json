@@ -1,0 +1,36 @@
+{
+	"id": "actionId",
+	"name": "actionName",
+	"description": "actionDescription",
+	"type": "actionType",
+	"operation": {
+		"url": "url",
+		"method": "post",
+		"username": "username",
+		"password": "password",
+		"contentType": "application/json",
+		"headers": [
+			{
+				"key": "key1",
+				"value": "value1"
+			},
+			{
+				"key": "key2",
+				"value": "value2"
+			}
+		],
+		"body": "body",
+		"retry": 2
+	},
+	"rule": {
+		"id": "ruleId",
+		"name": "ruleName",
+		"description": "ruleDescription",
+		"condition": "ruleCondition"
+	},
+	"timestamp": 1212,
+	"tenantId": "tenantId",
+	"deviceType": "deviceType",
+	"deviceId": "deviceId",
+	"event": []
+}
